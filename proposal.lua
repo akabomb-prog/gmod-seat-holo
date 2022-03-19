@@ -1,11 +1,12 @@
 -- NOTE: i originally intended this entire code to be completely clientside lol
 
+if CLIENT then
+
 CreateClientConVar("seatholo_enabled", "1", true, false, "Enables Seat Holo.")
 CreateClientConVar("seatholo_no_outfitter", "0", true, false, "Attempt to not use an Outfitter playermodel.")
 CreateClientConVar("seatholo_transparent", "1", true, false, "Make the hologram transparent.")
 CreateClientConVar("seatholo_flicker", "1", true, false, "If the hologram is transparent, should it flicker?")
 
-local lp = LocalPlayer()
 local aimed = NULL
 local SHholo = NULL
 
@@ -15,13 +16,14 @@ hook.Add("Think", "SeatHolo_Hook", function()
 		return
 	end
 	
-	aimed = util.TraceLine({start=lp:EyePos(),endpos=lp:EyePos() + lp:GetAimVector() * 128,filter=lp}).Entity -- traceline of 128 HUnits
-	if IsValid(aimed) && not(aimed:IsScripted()) && aimed:IsVehicle() && aimed:GetDriver() == NULL && not(lp:InVehicle() or not(lp:Alive())) then -- entity is valid, not scripted, is vehicle, has no drivers & player must be alive and not in a vehicle
+	aimed = util.TraceLine({start=LocalPlayer():EyePos(),endpos=LocalPlayer():EyePos() + LocalPlayer():GetAimVector() * 128,filter=LocalPlayer()}).Entity -- traceline of 128 HUnits
+	if IsValid(aimed) && not(aimed:IsScripted()) && aimed:IsVehicle() && aimed:GetDriver() == NULL && not(LocalPlayer():InVehicle() or not(LocalPlayer():Alive())) then -- entity is valid, not scripted, is vehicle, has no drivers & player must be alive and not in a vehicle
 		-- initial creation
 		if !IsValid(SHholo) then -- we don't have a holo prop, let's create it!
-			SHholo = ents.CreateClientProp(lp:GetModel())
+			SHholo = ents.CreateClientProp(LocalPlayer():GetModel())
 			SHholo:PhysicsDestroy()
 			SHholo:DestroyShadow()
+			SHholo:SetParent(aimed)
 			SHholo:Spawn()
 		end
 		
@@ -29,7 +31,7 @@ hook.Add("Think", "SeatHolo_Hook", function()
 		if GetConVar("seatholo_no_outfitter"):GetBool() then
 			SHholo:SetModel(player_manager.TranslatePlayerModel(GetConVar("cl_playermodel"):GetString())) -- cheap hack for now, it will very much lead to inconsistencies
 		else
-			SHholo:SetModel(lp:GetModel())
+			SHholo:SetModel(LocalPlayer():GetModel())
 		end
 		if GetConVar("seatholo_transparent"):GetBool() then
 			SHholo:SetRenderMode(1)
@@ -57,8 +59,19 @@ hook.Add("Think", "SeatHolo_Hook", function()
 		end
 		
 		-- animation(ing)
-		SHholo:SetSequence("sit_rollercoaster") -- currently placeholder, might want to let Bomb do this ! ! a
-	elseif !aimed:IsVehicle() && IsValid(SHholo) then -- no longer aiming at a vehicle, let's remove the holo prop
+		SHholo:SetSequence("drive_jeep") -- currently placeholder, might want to let Bomb do this ! ! a
+	elseif (LocalPlayer():InVehicle() || !aimed:IsVehicle() || not(LocalPlayer():Alive())) && IsValid(SHholo) then -- no longer aiming at a vehicle, let's remove the holo prop
 		SHholo:Remove()
 	end
 end)
+
+hook.Add("PopulateToolMenu", "SeatHoloSettings", function()
+	spawnmenu.AddToolMenuOption("Options", "Seat Holo", "SeatHoloSettings", "Settings", "", "", function(panel)
+		panel:AddControl("CheckBox", {Label = "Enable Seat Holo", Command = "seatholo_enabled"})
+		panel:AddControl("CheckBox", {Label = "Transparency", Command = "seatholo_transparent"})
+		panel:AddControl("CheckBox", {Label = "Flickering effect", Command = "seatholo_flicker"})
+		panel:AddControl("CheckBox", {Label = "Attempt avoiding Outfitter playermodel", Command = "seatholo_no_outfitter"})
+	end)
+end)
+
+end
