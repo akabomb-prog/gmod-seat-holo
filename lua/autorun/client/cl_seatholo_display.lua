@@ -1,73 +1,62 @@
 require("seat_holo")
 
-local playerHologram = NULL
-local holoCleanupTime = 0
-local vehicleAtAim = NULL
+local vehicle = NULL
+local SHholo = NULL
 
-hook.Add("Tick", "SeatHolo", function ()
-    -- get vehicle
-    local dir = LocalPlayer():GetAimVector()
-    dir:Mul(128)
-    dir:Add(LocalPlayer():EyePos())
-    local tr = util.TraceLine({
-        start = LocalPlayer():EyePos(),
-        endpos = dir,
-        filter = LocalPlayer()
-    })
-    if IsValid(tr.Entity) and tr.Entity:IsVehicle() then
-        vehicleAtAim = tr.Entity
-    else
-        vehicleAtAim = NULL
+hook.Add("Think", "SeatHolo_Hook", function()
+    if not GetConVar("seatholo_enabled"):GetBool() then
+        if IsValid(SHholo) then SHholo:Remove() end -- if we still have a holo prop, remove it so that the it doesn't get stuck always appearing
+        return
     end
-
-    -- update hologram
-    if not IsValid(playerHologram) then return end
-
-    if holoCleanupTime <= CurTime() then
-        playerHologram:Remove()
-        -- print("cleaning up player hologram " .. tostring(playerHologram))
-        holoCleanupTime = CurTime() + 2
-    else
-        -- update hologram color
-        local col = LocalPlayer():GetColor()
-        col.a = 0
-        playerHologram:SetColor(col)
-        playerHologram:SetRenderMode(RENDERMODE_TRANSCOLOR)
-    end
-end)
-
-hook.Add("PostDrawTranslucentRenderables", "SeatHolo", function (bDepth, bSkybox)
-    if bSkybox then return end -- don't draw in skybox
-
-    -- don't draw if we're in vehicle already or the vehicle is not valid
-    if LocalPlayer():InVehicle() then return end
-    if not (IsValid(vehicleAtAim) and vehicleAtAim:IsVehicle()) then return end
-
-    -- re-create hologram if needed
-    if not IsValid(playerHologram) then
-        playerHologram = ClientsideModel(LocalPlayer():GetModel(), RENDERGROUP_TRANSLUCENT)
-        playerHologram:Spawn()
-    end
-
-    -- set hologram alpha
-    local a = LocalPlayer():GetColor().a*0.003921568627451*0.75 -- divide by 255 and then multiply
-    render.SetBlend(a)
-
-    -- get driver's seat
-    local seatPos, seatAng = seat_holo.GetDriverSeat(vehicleAtAim)
-    playerHologram:SetPos(seatPos)
-    playerHologram:SetAngles(seatAng)
-
-    -- set hologram sequence
-    local seq = seat_holo.GetSitSequence(LocalPlayer(), vehicleAtAim)
-    if seq ~= -1 then
-        playerHologram:SetSequence(seq)
-        playerHologram:DrawModel()
-    end
-
-    -- set render alpha to 1
-    render.SetBlend(1)
     
-    -- reset cleanup timer
-    holoCleanupTime = CurTime() + 2
+    -- get vehicle being aimed at limited by 128 units
+    vehicle = util.TraceLine({
+        start = LocalPlayer():EyePos(),
+        endpos = LocalPlayer():EyePos() + LocalPlayer():GetAimVector() * 128,
+        filter = LocalPlayer()
+    }).Entity
+
+    -- destroy hologram (if it's valid) if we're in a vehicle, dead, the vehicle we're aiming at is not valid or it has a driver in it and return
+    if LocalPlayer():InVehicle() || !LocalPlayer():Alive() || !IsValid(vehicle) || !vehicle:IsVehicle() || vehicle:IsScripted() || vehicle:GetDriver() != NULL then
+        if IsValid(SHholo) then SHholo:Remove() end
+        return 
+    end
+
+    -- initialize hologram only if it doesn't exist
+    if IsValid(SHholo) then return end
+
+    -- create hologram
+    SHholo = ClientsideModel(LocalPlayer():GetModel(), RENDERGROUP_TRANSLUCENT)
+    SHholo:Spawn()
+
+    -- model
+    if GetConVar("seatholo_no_outfitter"):GetBool() then
+        SHholo:SetModel(player_manager.TranslatePlayerModel(GetConVar("cl_playermodel"):GetString())) -- cheap hack for now, it will very much lead to inconsistencies
+    else
+        SHholo:SetModel(LocalPlayer():GetModel())
+    end
+
+    -- color
+    local col = LocalPlayer():GetColor()
+    col.a = GetConVar("seatholo_alpha"):GetInt()
+    SHholo:SetColor(col)
+    SHholo:SetRenderMode(RENDERMODE_TRANSCOLOR)
+
+    -- flicker effect
+    if GetConVar("seatholo_flicker"):GetBool() then
+        SHholo:SetRenderFX(kRenderFxHologram)
+    else
+        SHholo:SetRenderFX(kRenderFxNone)
+    end
+    
+    -- move to driver seat
+    local driverPos, driverAng = seat_holo.GetDriverSeat(vehicle)
+    SHholo:SetPos(driverPos)
+    SHholo:SetAngles(driverAng)
+
+    -- parent hologram to vehicle
+    SHholo:SetParent(vehicle)
+
+    -- set appropriate sequence
+    SHholo:SetSequence(seat_holo.GetSitSequence(LocalPlayer(), vehicle))
 end)
