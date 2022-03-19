@@ -1,0 +1,8 @@
+hook.Add("PopulateToolMenu", "SeatHoloSettings", function ()
+	spawnmenu.AddToolMenuOption("Options", "Seat Holo", "SeatHoloSettings", "Settings", "", "", function (form)
+		form:CheckBox("Enable Seat Holo", "seatholo_enabled")
+		form:NumSlider("Hologram alpha", "seatholo_alpha", 0, 255)
+		form:CheckBox("Hologram flickers (not affected by alpha)", "seatholo_flicker")
+		form:CheckBox("Attempt avoiding Outfitter playermodel", "seatholo_no_outfitter")
+	end)
+end)

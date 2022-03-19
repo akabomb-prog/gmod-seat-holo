@@ -3,6 +3,13 @@ require("seat_holo")
 local vehicle = NULL
 local SHholo = NULL
 
+local function DestroyHologram()
+    if IsValid(SHholo) then SHholo:Remove() end
+end
+
+cvars.AddChangeCallback("seatholo_alpha", DestroyHologram)
+cvars.AddChangeCallback("seatholo_flicker", DestroyHologram)
+
 hook.Add("Think", "SeatHolo_Hook", function()
     if not GetConVar("seatholo_enabled"):GetBool() then
         if IsValid(SHholo) then SHholo:Remove() end -- if we still have a holo prop, remove it so that the it doesn't get stuck always appearing
@@ -22,8 +29,15 @@ hook.Add("Think", "SeatHolo_Hook", function()
         return 
     end
 
+    if IsValid(SHholo) then
+        -- if we have a hologram, set sequence
+        local seq = seat_holo.GetSitSequence(LocalPlayer(), vehicle)
+        SHholo:SetSequence(seq)
+        vehicle:SetVar("SeatHolo_sitSequence", seq)
+        return
+    end
+    
     -- initialize hologram only if it doesn't exist
-    if IsValid(SHholo) then return end
 
     -- create hologram
     SHholo = ClientsideModel(LocalPlayer():GetModel(), RENDERGROUP_TRANSLUCENT)
@@ -56,7 +70,12 @@ hook.Add("Think", "SeatHolo_Hook", function()
 
     -- parent hologram to vehicle
     SHholo:SetParent(vehicle)
-
-    -- set appropriate sequence
-    SHholo:SetSequence(seat_holo.GetSitSequence(LocalPlayer(), vehicle))
+    
+    if !vehicle:GetVar("SeatHolo_hasHints", false) then
+        -- if we don't have a sequence, set default
+        SHholo:SetSequence(SHholo:LookupSequence("sit"))
+    else
+        -- if we already have
+        SHholo:SetSequence(seat_holo.GetSitSequence(LocalPlayer(), vehicle))
+    end
 end)
