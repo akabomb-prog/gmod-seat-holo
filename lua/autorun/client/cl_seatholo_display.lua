@@ -37,7 +37,9 @@ hook.Add("Think", "SeatHolo_Hook", function()
     end
 
     -- color
-    SHholo:SetColor(LocalPlayer():GetColor())
+    local col = LocalPlayer():GetColor()
+    col.a = GetConVar("seatholo_alpha"):GetInt()
+    SHholo:SetColor(col)
     SHholo:SetRenderMode(RENDERMODE_TRANSCOLOR)
 
     -- flicker effect
