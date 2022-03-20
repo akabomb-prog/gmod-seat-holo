@@ -3,7 +3,7 @@ require("seat_holo")
 local vehicle = NULL
 local SHholo = NULL
 
-hook.Add("Think", "SeatHolo_Hook", function()
+hook.Add("Think", "SeatHolo_Hook", function ()
     if not GetConVar("seatholo_enabled"):GetBool() then
         if IsValid(SHholo) then SHholo:Remove() end -- if we still have a holo prop, remove it so that the it doesn't get stuck always appearing
         return
@@ -72,7 +72,7 @@ hook.Add("Think", "SeatHolo_Hook", function()
     
     if !vehicle:GetVar("SeatHolo_hasHints", false) then
         -- if we don't have a sequence, set default
-        SHholo:SetSequence(SHholo:LookupSequence("sit"))
+        SHholo:SetSequence("sit")
     else
         -- if we already have
         SHholo:SetSequence(seat_holo.GetSitSequence(LocalPlayer(), vehicle))

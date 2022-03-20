@@ -10,7 +10,7 @@ hook.Add("Tick", "SeatHolo", function ()
             for i,ply in ipairs(player.GetAll()) do
                 net.Start("SeatHolo_sitSequence")
                     net.WriteEntity(ent)
-                    net.WriteInt(seat_holo.GetSitSequence(ply, ent), 16)
+                    net.WriteString(seat_holo.GetSitSequence(ply, ent))
                 net.Send(ply)
             end
         end
