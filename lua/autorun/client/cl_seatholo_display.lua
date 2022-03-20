@@ -46,7 +46,7 @@ hook.Add("Think", "SeatHolo_display", function ()
     -- initialize hologram only if it doesn't exist
 
     -- create hologram
-    SHholo = ClientsideModel(LocalPlayer():GetModel(), RENDERGROUP_TRANSLUCENT)
+    SHholo = ClientsideModel(LocalPlayer():GetModel(), RENDERGROUP_BOTH)
     SHholo:Spawn()
 
     -- model
@@ -61,6 +61,11 @@ hook.Add("Think", "SeatHolo_display", function ()
     col.a = GetConVar("seatholo_alpha"):GetInt()
     SHholo:SetColor(col)
     SHholo:SetRenderMode(RENDERMODE_TRANSCOLOR)
+
+    -- proper player color
+    function SHholo:GetPlayerColor()
+        return LocalPlayer():GetPlayerColor()
+    end
 
     -- flicker effect
     if GetConVar("seatholo_flicker"):GetBool() then

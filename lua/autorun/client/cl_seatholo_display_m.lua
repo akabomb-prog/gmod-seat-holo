@@ -13,7 +13,7 @@ hook.Add("Think", "SeatHolo_display_m", function ()
             local shouldHolo = vehicle:GetVar("SeatHolo_forceHolo", false)
             if !IsValid(holo) && shouldHolo then
                 -- create hologram
-                holo = ClientsideModel(LocalPlayer():GetModel(), RENDERGROUP_TRANSLUCENT)
+                holo = ClientsideModel(LocalPlayer():GetModel(), RENDERGROUP_BOTH)
                 holo:Spawn()
             
                 -- model
@@ -28,6 +28,11 @@ hook.Add("Think", "SeatHolo_display_m", function ()
                 col.a = GetConVar("seatholo_alpha"):GetInt()
                 holo:SetColor(col)
                 holo:SetRenderMode(RENDERMODE_TRANSCOLOR)
+
+                -- proper player color
+                function holo:GetPlayerColor()
+                    return LocalPlayer():GetPlayerColor()
+                end
             
                 -- flicker effect
                 if GetConVar("seatholo_flicker"):GetBool() then
