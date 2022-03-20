@@ -67,6 +67,14 @@ hook.Add("Think", "SeatHolo_display", function ()
         return LocalPlayer():GetPlayerColor()
     end
 
+    -- skin
+    SHholo:SetSkin(LocalPlayer():GetSkin())
+	
+    -- bodygroups
+    for k,v in pairs(LocalPlayer():GetBodyGroups()) do
+		SHholo:SetBodygroup(v["id"],LocalPlayer():GetBodygroup(v["id"]))
+	end
+
     -- flicker effect
     if GetConVar("seatholo_flicker"):GetBool() then
         SHholo:SetRenderFX(kRenderFxHologram)

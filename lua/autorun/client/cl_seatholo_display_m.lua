@@ -42,6 +42,14 @@ hook.Add("Think", "SeatHolo_display_m", function ()
                 function holo:GetPlayerColor()
                     return LocalPlayer():GetPlayerColor()
                 end
+
+				-- skin
+				holo:SetSkin(LocalPlayer():GetSkin())
+				
+				-- bodygroups
+				for k,v in pairs(LocalPlayer():GetBodyGroups()) do
+					holo:SetBodygroup(v["id"],LocalPlayer():GetBodygroup(v["id"]))
+				end
             
                 -- flicker effect
                 if GetConVar("seatholo_flicker"):GetBool() then
