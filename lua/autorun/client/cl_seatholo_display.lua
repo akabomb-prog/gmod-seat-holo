@@ -93,3 +93,4 @@ end
 
 cvars.AddChangeCallback("seatholo_alpha", DestroyHologram)
 cvars.AddChangeCallback("seatholo_flicker", DestroyHologram)
+cvars.AddChangeCallback("seatholo_no_outfitter", DestroyHologram)
