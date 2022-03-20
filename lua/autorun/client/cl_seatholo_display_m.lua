@@ -55,12 +55,18 @@ hook.Add("Think", "SeatHolo_display_m", function ()
                 vehicle:SetVar("SeatHolo_holo", holo)
 
                 vehicle:CallOnRemove("RemoveSeatHolo", function (self)
-                    local holo = self:GetVar("SeatHolo_holo", NULL)
-                    if IsValid(holo) then holo:Remove() end
+                    timer.Simple(0, function ()
+                        if !IsValid(vehicle) && IsValid(holo) then
+                            holo:Remove()
+                        end
+                    end)
                 end)
-            else
+            elseif !shouldHolo then
                 vehicle:RemoveCallOnRemove("RemoveSeatHolo")
-                if IsValid(holo) then holo:Remove() end
+                if IsValid(holo) then
+                    holo:Remove()
+                    vehicle:SetVar("SeatHolo_holo", NULL)
+                end
             end
         end
     end

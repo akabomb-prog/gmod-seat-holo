@@ -1,10 +1,10 @@
 AddCSLuaFile()
 
-properties.Add("enable_seat_holo", 
+properties.Add("create_seat_holo", 
 {
-    MenuLabel = "Show seat hologram",
+    MenuLabel = "Create driver hologram",
     Order = 850,
-    MenuIcon = "icon16/camera.png",
+    MenuIcon = "icon16/user_add.png",
     Filter = function (self, ent, ply) 
         return seat_holo.IsValidVehicle(ent) && !ent:GetVar("SeatHolo_forceHolo", false)
     end,
@@ -13,11 +13,11 @@ properties.Add("enable_seat_holo",
     end
 })
 
-properties.Add("disable_seat_holo", 
+properties.Add("destroy_seat_holo", 
 {
-    MenuLabel = "Hide seat hologram",
+    MenuLabel = "Destroy driver hologram",
     Order = 850,
-    MenuIcon = "icon16/camera.png",
+    MenuIcon = "icon16/user_delete.png",
     Filter = function (self, ent, ply) 
         return seat_holo.IsValidVehicle(ent) && ent:GetVar("SeatHolo_forceHolo", false)
     end,
