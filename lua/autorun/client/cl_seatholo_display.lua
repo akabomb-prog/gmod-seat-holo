@@ -33,8 +33,10 @@ hook.Add("Think", "SeatHolo_Hook", function ()
     if IsValid(SHholo) then
         -- if we have a hologram, set sequence
         local seq = seat_holo.GetSitSequence(LocalPlayer(), vehicle)
-        SHholo:SetSequence(tostring(seq)) -- sometimes, the sequence will turn out to be nil. this is a lazy fix for that
-        vehicle:SetVar("SeatHolo_sitSequence", seq)
+        if seq != nil then
+            SHholo:SetSequence(seq)
+            vehicle:SetVar("SeatHolo_sitSequence", seq)
+        end
         return
     end
     
@@ -72,12 +74,12 @@ hook.Add("Think", "SeatHolo_Hook", function ()
     -- parent hologram to vehicle
     SHholo:SetParent(vehicle)
     
-    if !vehicle:GetVar("SeatHolo_hasHints", false) then
-        -- if we don't have a sequence, set default
-        SHholo:SetSequence("sit")
-    else
-        -- if we already have
+    if vehicle:GetVar("SeatHolo_sitSequence") != nil then
+        -- if we already have a sequence, set
         SHholo:SetSequence(seat_holo.GetSitSequence(LocalPlayer(), vehicle))
+    else
+        -- if we don't, set default
+        SHholo:SetSequence("sit")
     end
 end)
 

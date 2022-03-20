@@ -15,13 +15,20 @@ local function _GetSitSequence(ply, veh)
             local class = veh:GetClass()
             if class == "prop_vehicle_jeep" then
                 -- hl2 jeep
-                return "drive_jeep"
+                return ply:GetSequenceName(ply:SelectWeightedSequence(ACT_DRIVE_JEEP))
             elseif class == "prop_vehicle_airboat" then
                 -- hl2 airboat
-                return "drive_airboat"
+                return ply:GetSequenceName(ply:SelectWeightedSequence(ACT_DRIVE_AIRBOAT))
             elseif class == "prop_vehicle_prisoner_pod" then
-                -- hl2 prisoner pod
-                return "drive_pd"
+                -- hl2 prisoner pod (which can also be a seat)
+                local model = veh:GetModel():lower()
+                if model:find("seat") || model:find("chair") then
+                    -- seat/chair
+                    return ply:GetSequenceName(ply:SelectWeightedSequence(ACT_GMOD_SIT_ROLLERCOASTER))
+                else
+                    -- pod
+                    return ply:GetSequenceName(ply:SelectWeightedSequence(ACT_DRIVE_POD))
+                end
             end
         end
     end
@@ -38,10 +45,10 @@ end
 if CLIENT then
 
 function GetSitSequence(ply, veh)
-    if veh:GetVar("SeatHolo_hasHints", false) then
+    if veh:GetVar("SeatHolo_sitSequence") != nil then
         return veh:GetVar("SeatHolo_sitSequence")
     end
-    _GetSitSequence(ply, veh)
+    return _GetSitSequence(ply, veh)
 end
 
 function GetDriverSeat(veh)
@@ -59,7 +66,7 @@ end
 
 elseif SERVER then
 
-GetSitSequence =_GetSitSequence
+GetSitSequence = _GetSitSequence
 
 function GetDriverSeat(veh)
     if IsValid(veh) && veh:IsVehicle() then

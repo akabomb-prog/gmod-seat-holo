@@ -1,10 +1,10 @@
 require("seat_holo")
 
--- if the server has this hook, it will send the sit sequence to players
+-- if the server has this hook, it will send hints about the hologram behaviour to players
 
 util.AddNetworkString("SeatHolo_sitSequence")
 
-hook.Add("Tick", "SeatHolo", function ()
+hook.Add("Tick", "SeatHolo_hints", function ()
     for i,ent in ipairs(ents.FindByClass("*vehicle*")) do
         if seat_holo.IsValidVehicle(ent) then
             for i,ply in ipairs(player.GetAll()) do
