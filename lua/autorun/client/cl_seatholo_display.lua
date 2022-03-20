@@ -5,8 +5,8 @@ require("seat_holo")
 local vehicle = NULL
 local SHholo = NULL
 
-hook.Add("Think", "SeatHolo_Hook", function ()
-    if not GetConVar("seatholo_enabled"):GetBool() then
+hook.Add("Think", "SeatHolo_display", function ()
+    if !GetConVar("seatholo_enabled"):GetBool() then
         if IsValid(SHholo) then SHholo:Remove() end -- if we still have a holo prop, remove it so that it doesn't get stuck always appearing
         return
     end
@@ -17,6 +17,9 @@ hook.Add("Think", "SeatHolo_Hook", function ()
         endpos = LocalPlayer():EyePos() + LocalPlayer():GetAimVector() * 128,
         filter = LocalPlayer()
     }).Entity
+
+    -- don't do anything if what we're aiming at has a hologram already
+    if IsValid(aimed) && aimed:GetVar("SeatHolo_forceHolo", false) then return end
 
     -- destroy hologram (if it's valid) if:
     -- we're in a vehicle,
@@ -48,7 +51,7 @@ hook.Add("Think", "SeatHolo_Hook", function ()
 
     -- model
     if GetConVar("seatholo_no_outfitter"):GetBool() then
-        SHholo:SetModel(player_manager.TranslatePlayerModel(GetConVar("cl_playermodel"):GetString())) -- cheap hack for now, it will very much lead to inconsistencies
+        SHholo:SetModel(player_manager.TranslatePlayerModel(GetConVar("cl_playermodel"):GetString()))
     else
         SHholo:SetModel(LocalPlayer():GetModel())
     end
