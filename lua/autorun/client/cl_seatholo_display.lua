@@ -3,30 +3,29 @@ require("seat_holo")
 local vehicle = NULL
 local SHholo = NULL
 
-local function DestroyHologram()
-    if IsValid(SHholo) then SHholo:Remove() end
-end
-
-cvars.AddChangeCallback("seatholo_alpha", DestroyHologram)
-cvars.AddChangeCallback("seatholo_flicker", DestroyHologram)
-
 hook.Add("Think", "SeatHolo_Hook", function()
     if not GetConVar("seatholo_enabled"):GetBool() then
         if IsValid(SHholo) then SHholo:Remove() end -- if we still have a holo prop, remove it so that the it doesn't get stuck always appearing
         return
     end
     
-    -- get vehicle being aimed at limited by 128 units
-    vehicle = util.TraceLine({
+    -- get something being aimed at limited by 128 units
+    local aimed = util.TraceLine({
         start = LocalPlayer():EyePos(),
         endpos = LocalPlayer():EyePos() + LocalPlayer():GetAimVector() * 128,
         filter = LocalPlayer()
     }).Entity
 
-    -- destroy hologram (if it's valid) if we're in a vehicle, dead, the vehicle we're aiming at is not valid or it has a driver in it and return
-    if LocalPlayer():InVehicle() || !LocalPlayer():Alive() || !IsValid(vehicle) || !vehicle:IsVehicle() || vehicle:IsScripted() || vehicle:GetDriver() != NULL then
+    -- destroy hologram (if it's valid) if:
+    -- we're in a vehicle,
+    -- dead,
+    -- the vehicle we're aiming at is not valid,
+    -- the vehicle has a driver in it
+    -- or it's different from what we were aimings at before
+    if LocalPlayer():InVehicle() || !LocalPlayer():Alive() || !IsValid(vehicle) || !vehicle:IsVehicle() || vehicle:IsScripted() || vehicle:GetDriver() != NULL || vehicle != aimed then
         if IsValid(SHholo) then SHholo:Remove() end
-        return 
+        vehicle = aimed -- also set the vehicle to be what we're aiming at
+        return
     end
 
     if IsValid(SHholo) then
@@ -79,3 +78,11 @@ hook.Add("Think", "SeatHolo_Hook", function()
         SHholo:SetSequence(seat_holo.GetSitSequence(LocalPlayer(), vehicle))
     end
 end)
+
+-- update hologram with cvar change
+local function DestroyHologram()
+    if IsValid(SHholo) then SHholo:Remove() end
+end
+
+cvars.AddChangeCallback("seatholo_alpha", DestroyHologram)
+cvars.AddChangeCallback("seatholo_flicker", DestroyHologram)
