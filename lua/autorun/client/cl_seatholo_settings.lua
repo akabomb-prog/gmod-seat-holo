@@ -25,12 +25,12 @@ concommand.Add("seatholo_destroyholos", function (ply)
     end
 end)
 
-hook.Add("PopulateToolMenu", "SeatHoloSettings", function ()
+hook.Add("PopulateToolMenu", "SeatHolo_menu", function ()
     spawnmenu.AddToolMenuOption("Options", "Seat Holo", "SeatHoloSettings", "Settings", "", "", function (form)
-        form:CheckBox("Enable Seat Holo", "seatholo_enabled")
-        form:NumSlider("Hologram alpha", "seatholo_alpha", 0, 255, 0)
-        form:CheckBox("Hologram flickers (not affected by alpha)", "seatholo_flicker")
-        form:CheckBox("Attempt avoiding Outfitter playermodel", "seatholo_no_outfitter")
+        form:CheckBox("#seatholo.seatholo_enabled.text", "seatholo_enabled")
+        form:NumSlider("#seatholo.seatholo_alpha.text", "seatholo_alpha", 0, 255, 0)
+        form:CheckBox("#seatholo.seatholo_flicker.text", "seatholo_flicker")
+        form:CheckBox("#seatholo.seatholo_no_outfitter.text", "seatholo_no_outfitter")
         
         -- holograms button logic
 
@@ -41,7 +41,7 @@ hook.Add("PopulateToolMenu", "SeatHoloSettings", function ()
         -- button
         local destroyBtn = form:Button("Destroy created holograms", "seatholo_destroyholos")
         local function UpdateElements()
-            holosCounter:SetText("Created holograms: " .. holosCount)
+            holosCounter:SetText(language.GetPhrase("seatholo.holocounter.text"):format(holosCount))
             destroyBtn:SetEnabled(holosCount > 0)
         end
         hook.Add("SeatHolo_HoloCreated", "SeatHolo_DestroyBtn", UpdateElements)
@@ -50,3 +50,10 @@ hook.Add("PopulateToolMenu", "SeatHoloSettings", function ()
         UpdateElements()
     end)
 end)
+
+-- add phrases
+language.Add("seatholo.seatholo_enabled.text", "Enable dynamic holograms")
+language.Add("seatholo.seatholo_alpha.text", "Hologram alpha")
+language.Add("seatholo.seatholo_flicker.text", "Hologram flickers (not affected by alpha)")
+language.Add("seatholo.seatholo_no_outfitter.text", "Try not using Outfitter playermodel")
+language.Add("seatholo.holocounter.text", "Created holograms: %d")
