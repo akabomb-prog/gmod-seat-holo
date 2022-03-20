@@ -5,7 +5,7 @@ properties.Add("create_seat_holo",
     MenuLabel = "Create driver hologram",
     Order = 850,
     MenuIcon = "icon16/user_add.png",
-    Filter = function (self, ent, ply) 
+    Filter = function (self, ent, ply)
         return seat_holo.IsValidVehicle(ent) && !ent:GetVar("SeatHolo_forceHolo", false)
     end,
     Action = function (self, ent)
