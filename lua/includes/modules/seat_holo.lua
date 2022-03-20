@@ -54,7 +54,7 @@ function GetDriverSeat(veh)
 end
 
 function IsValidVehicle(vehicle)
-    return IsValid(vehicle) && vehicle:IsVehicle() && !vehicle:IsScripted() && vehicle:GetDriver() == NULL
+    return IsValid(vehicle) && vehicle:IsVehicle() && !vehicle:IsScripted() && !IsValid(vehicle:GetDriver())
 end
 
 elseif SERVER then
