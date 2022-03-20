@@ -1,3 +1,5 @@
+AddCSLuaFile()
+
 local CLIENT = CLIENT
 local SERVER = SERVER
 local isfunction = isfunction
@@ -38,14 +40,6 @@ function GetSitSequence(ply, veh)
     _GetSitSequence(ply, veh)
 end
 
-elseif SERVER then
-
-GetSitSequence =_GetSitSequence
-
-end
-
-if CLIENT then
-
 function GetDriverSeat(veh)
     if IsValid(veh) && veh:IsVehicle() then
         local dSeatAttachment = veh:LookupAttachment("vehicle_feet_passenger0")
@@ -59,7 +53,13 @@ function GetDriverSeat(veh)
     return nil, nil
 end
 
+function IsValidVehicle(veh)
+    return IsValid(vehicle) && vehicle:IsVehicle() && !vehicle:IsScripted() && vehicle:GetDriver() == NULL
+end
+
 elseif SERVER then
+
+GetSitSequence =_GetSitSequence
 
 function GetDriverSeat(veh)
     if IsValid(veh) && veh:IsVehicle() then

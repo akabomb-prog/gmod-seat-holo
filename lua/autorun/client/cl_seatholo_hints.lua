@@ -1,3 +1,5 @@
+AddCSLuaFile()
+
 -- this will receive hints from the server
 
 net.Receive("SeatHolo_sitSequence", function (len)

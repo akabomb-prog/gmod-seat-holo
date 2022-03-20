@@ -1,3 +1,5 @@
+AddCSLuaFile()
+
 require("seat_holo")
 
 local vehicle = NULL
@@ -22,7 +24,7 @@ hook.Add("Think", "SeatHolo_Hook", function ()
     -- the vehicle we're aiming at is not valid,
     -- the vehicle has a driver in it
     -- or it's different from what we were aimings at before
-    if LocalPlayer():InVehicle() || !LocalPlayer():Alive() || !IsValid(vehicle) || !vehicle:IsVehicle() || vehicle:IsScripted() || vehicle:GetDriver() != NULL || vehicle != aimed then
+    if LocalPlayer():InVehicle() || !LocalPlayer():Alive() || !seat_holo.IsValidVehicle(vehicle) || vehicle != aimed then
         if IsValid(SHholo) then SHholo:Remove() end
         vehicle = aimed -- also set the vehicle to be what we're aiming at
         return
