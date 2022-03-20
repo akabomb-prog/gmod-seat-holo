@@ -31,6 +31,10 @@ end
 
 module("seat_holo")
 
+function IsValidVehicle(vehicle)
+    return IsValid(vehicle) && vehicle:IsVehicle() && !vehicle:IsScripted() && !IsValid(vehicle:GetDriver())
+end
+
 if CLIENT then
 
 function GetSitSequence(ply, veh)
@@ -51,10 +55,6 @@ function GetDriverSeat(veh)
         end
     end
     return nil, nil
-end
-
-function IsValidVehicle(vehicle)
-    return IsValid(vehicle) && vehicle:IsVehicle() && !vehicle:IsScripted() && !IsValid(vehicle:GetDriver())
 end
 
 elseif SERVER then
