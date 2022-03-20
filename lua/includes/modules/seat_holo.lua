@@ -53,7 +53,7 @@ function GetDriverSeat(veh)
     return nil, nil
 end
 
-function IsValidVehicle(veh)
+function IsValidVehicle(vehicle)
     return IsValid(vehicle) && vehicle:IsVehicle() && !vehicle:IsScripted() && vehicle:GetDriver() == NULL
 end
 
