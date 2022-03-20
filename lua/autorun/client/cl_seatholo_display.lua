@@ -7,7 +7,7 @@ local SHholo = NULL
 
 hook.Add("Think", "SeatHolo_Hook", function ()
     if not GetConVar("seatholo_enabled"):GetBool() then
-        if IsValid(SHholo) then SHholo:Remove() end -- if we still have a holo prop, remove it so that the it doesn't get stuck always appearing
+        if IsValid(SHholo) then SHholo:Remove() end -- if we still have a holo prop, remove it so that it doesn't get stuck always appearing
         return
     end
     
@@ -23,7 +23,7 @@ hook.Add("Think", "SeatHolo_Hook", function ()
     -- dead,
     -- the vehicle we're aiming at is not valid,
     -- the vehicle has a driver in it
-    -- or it's different from what we were aimings at before
+    -- or it's different from what we were aiming at before
     if LocalPlayer():InVehicle() || !LocalPlayer():Alive() || !seat_holo.IsValidVehicle(vehicle) || vehicle != aimed then
         if IsValid(SHholo) then SHholo:Remove() end
         vehicle = aimed -- also set the vehicle to be what we're aiming at
@@ -33,7 +33,7 @@ hook.Add("Think", "SeatHolo_Hook", function ()
     if IsValid(SHholo) then
         -- if we have a hologram, set sequence
         local seq = seat_holo.GetSitSequence(LocalPlayer(), vehicle)
-        SHholo:SetSequence(seq)
+        SHholo:SetSequence(tostring(seq)) -- sometimes, the sequence will turn out to be nil. this is a lazy fix for that
         vehicle:SetVar("SeatHolo_sitSequence", seq)
         return
     end
