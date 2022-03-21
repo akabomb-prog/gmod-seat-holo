@@ -67,7 +67,12 @@ hook.Add("Think", "SeatHolo_display_m", function ()
                 -- fix unparenting
                 function holo:RenderOverride()
                     if !IsValid(vehicle) then return end
+
+                    local driverPos, driverAng = seat_holo.GetDriverSeat(vehicle)
+                    holo:SetPos(driverPos)
+                    holo:SetAngles(driverAng)
                     self:SetParent(vehicle)
+                    
                     self:DrawModel()
                 end
             
