@@ -37,10 +37,11 @@ hook.Add("Think", "SeatHolo_display_m", function ()
                 col.a = GetConVar("seatholo_alpha"):GetInt()
                 holo:SetColor(col)
                 holo:SetRenderMode(RENDERMODE_TRANSCOLOR)
+                holo:SetVar("SeatHolo_col", LocalPlayer():GetPlayerColor())
 
                 -- proper player color
                 function holo:GetPlayerColor()
-                    return LocalPlayer():GetPlayerColor()
+                    return holo:GetVar("SeatHolo_col", Vector(1, 1, 1))
                 end
 
                 -- skin
