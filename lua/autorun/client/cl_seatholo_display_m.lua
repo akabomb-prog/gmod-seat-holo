@@ -43,14 +43,14 @@ hook.Add("Think", "SeatHolo_display_m", function ()
                     return LocalPlayer():GetPlayerColor()
                 end
 
-				-- skin
-				holo:SetSkin(LocalPlayer():GetSkin())
-				
-				-- bodygroups
-				for k,v in pairs(LocalPlayer():GetBodyGroups()) do
-					holo:SetBodygroup(v["id"],LocalPlayer():GetBodygroup(v["id"]))
-				end
-            
+                -- skin
+                holo:SetSkin(LocalPlayer():GetSkin())
+
+                -- bodygroups
+                for k,v in pairs(LocalPlayer():GetBodyGroups()) do
+                    holo:SetBodygroup(v["id"],LocalPlayer():GetBodygroup(v["id"]))
+                end
+
                 -- flicker effect
                 if GetConVar("seatholo_flicker"):GetBool() then
                     holo:SetRenderFX(kRenderFxHologram)
@@ -62,6 +62,13 @@ hook.Add("Think", "SeatHolo_display_m", function ()
                 local driverPos, driverAng = seat_holo.GetDriverSeat(vehicle)
                 holo:SetPos(driverPos)
                 holo:SetAngles(driverAng)
+
+                -- fix unparenting
+                function holo:RenderOverride()
+                    if !IsValid(vehicle) then return end
+                    self:SetParent(vehicle)
+                    self:DrawModel()
+                end
             
                 -- parent hologram to vehicle
                 holo:SetParent(vehicle)
