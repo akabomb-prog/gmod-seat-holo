@@ -10,7 +10,7 @@ hook.Add("Tick", "SeatHolo_hints", function ()
             local sitseq = seat_holo.GetSitSequence(ply, ent)
             if sitseq != nil then
                 for i,ply in ipairs(player.GetAll()) do
-                    net.Start("SeatHolo_sitSequence")
+                    net.Start("SeatHolo_sitSequence", true) -- unreliable because this is sent every tick anyway
                         net.WriteEntity(ent)
                         net.WriteString(sitseq)
                     net.Send(ply)
