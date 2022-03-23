@@ -1,2 +1,3 @@
-# gmod-seat-holo
-GMod addon to display a player hologram being in the vehicle that is being looked at
+# Seat Holo
+Garry's Mod addon to display holograms in vehicles' driver seats  
+Made in collaboration with [@NotNihilanth](https://github.com/NotNihilanth)
