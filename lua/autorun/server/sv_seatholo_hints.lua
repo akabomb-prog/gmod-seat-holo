@@ -7,11 +7,14 @@ util.AddNetworkString("SeatHolo_sitSequence")
 hook.Add("Tick", "SeatHolo_hints", function ()
     for i,ent in ipairs(ents.FindByClass("*vehicle*")) do
         if seat_holo.IsValidVehicle(ent) then
-            for i,ply in ipairs(player.GetAll()) do
-                net.Start("SeatHolo_sitSequence")
-                    net.WriteEntity(ent)
-                    net.WriteString(seat_holo.GetSitSequence(ply, ent))
-                net.Send(ply)
+            local sitseq = seat_holo.GetSitSequence(ply, ent)
+            if sitseq != nil then
+                for i,ply in ipairs(player.GetAll()) do
+                    net.Start("SeatHolo_sitSequence")
+                        net.WriteEntity(ent)
+                        net.WriteString(sitseq)
+                    net.Send(ply)
+                end
             end
         end
     end
